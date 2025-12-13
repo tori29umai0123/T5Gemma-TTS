@@ -33,6 +33,10 @@ pip install -r requirements.txt
 pip install torch<=2.8.0 torchaudio --index-url https://download.pytorch.org/whl/cu128
 ```
 
+## Known Issues
+
+- **Windows**: On some native Windows environments, inference may exhibit unstable behavior such as inconsistent generation times or occasional hangs. This issue has been observed in my testing but the root cause is still under investigation. If you experience similar problems, consider using WSL2 or Docker as a workaround.
+
 ## Quick Start
 
 ### Basic Inference (HuggingFace Format)
@@ -103,6 +107,37 @@ python inference_gradio.py \
 ```
 
 By default, XCodec2-Variant (NandemoGHS/Anime-XCodec2-44.1kHz-v2) is used for audio decoding to better support Japanese voices. For English and Chinese voices, I recommend using the original XCodec2 model.
+
+### Docker (Recommended for Windows users)
+
+If you experience issues on Windows, Docker provides a stable Linux environment:
+
+```bash
+# Using docker-compose (recommended)
+docker compose up --build
+
+# Or build and run manually
+docker build -t t5gemma-tts .
+docker run --gpus all -p 7860:7860 t5gemma-tts
+```
+
+#### Docker Configuration Options
+
+You can customize the Docker setup using environment variables:
+
+```bash
+# Specify CUDA version (cu118, cu121, cu124, cu128)
+CUDA_VERSION=cu121 docker compose up --build
+
+# Use a different model
+MODEL_DIR=your-org/your-model docker compose up
+
+# Change the port
+PORT=8080 docker compose up
+
+# Pass additional arguments
+EXTRA_ARGS="--no_compile --share" docker compose up
+```
 
 ```bash
 # You must use the original xcodec2 library when using the original XCodec2 model

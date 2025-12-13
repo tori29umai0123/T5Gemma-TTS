@@ -31,6 +31,10 @@ pip install -r requirements.txt
 pip install torch<=2.8.0 torchaudio --index-url https://download.pytorch.org/whl/cu128
 ```
 
+## 既知の問題
+
+- **Windows**: 開発者の環境において、Windows上での推論時に生成時間が不安定になったり、処理がハングしたりする問題が確認されています。原因は調査中です。同様の問題が発生した場合は、WSL2、またはDockerを使用することを推奨します。
+
 ## クイックスタート
 
 ### 基本的な推論（HuggingFaceフォーマット）
@@ -101,6 +105,37 @@ python inference_gradio.py \
 ```
 
 デフォルトでは、日本語音声の品質のためにXCodec2-Variant（NandemoGHS/Anime-XCodec2-44.1kHz-v2）が使用されます。英語および中国語音声には、元のXCodec2モデルの使用を推奨します。
+
+### Docker（Windowsユーザー向け推奨）
+
+Windowsで問題が発生する場合、Dockerを使用することで安定したLinux環境で実行できます：
+
+```bash
+# docker-composeを使用（推奨）
+docker compose up --build
+
+# または手動でビルド・実行
+docker build -t t5gemma-tts .
+docker run --gpus all -p 7860:7860 t5gemma-tts
+```
+
+#### Docker設定オプション
+
+環境変数でDockerの設定をカスタマイズできます：
+
+```bash
+# CUDAバージョンを指定（cu118, cu121, cu124, cu128）
+CUDA_VERSION=cu121 docker compose up --build
+
+# 別のモデルを使用
+MODEL_DIR=your-org/your-model docker compose up
+
+# ポートを変更
+PORT=8080 docker compose up
+
+# 追加の引数を渡す
+EXTRA_ARGS="--no_compile --share" docker compose up
+```
 
 ```bash
 # 元のXCodec2モデルを使用する場合は、オリジナルのxcodec2ライブラリを使用する必要があります
